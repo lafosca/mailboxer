@@ -10,7 +10,7 @@ class Mailbox
   #Returns the notifications for the messageable
   def notifications(options = {})
     #:type => nil is a hack not to give Messages as Notifications
-    notifs = Notification.recipient(@messageable).where(:type => nil).order("notifications.created_at DESC")
+    notifs = Notification.recipient(@messageable).where(:type => nil).order("#{Notification.table_name}.created_at DESC")
     if (options[:read].present? and options[:read]==false) or (options[:unread].present? and options[:unread]==true)
       notifs = notifs.unread
     end

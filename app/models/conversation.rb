@@ -9,9 +9,9 @@ class Conversation < ActiveRecord::Base
   before_validation :clean
 
   scope :participant, lambda {|participant|
-    select('DISTINCT conversations.*').
-      where('notifications.type'=> Message.name).
-      order("conversations.updated_at DESC").
+    select("DISTINCT #{table_name}.*").
+      where("#{Notification.table_name}.type"=> Message.name).
+      order("#{table_name}.updated_at DESC").
       joins(:receipts).merge(Receipt.recipient(participant))
   }
   scope :inbox, lambda {|participant|

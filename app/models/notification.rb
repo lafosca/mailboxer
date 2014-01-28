@@ -9,21 +9,21 @@ class Notification < ActiveRecord::Base
   validates_presence_of :subject, :body
 
   scope :recipient, lambda { |recipient|
-    joins(:receipts).where('receipts.receiver_id' => recipient.id,'receipts.receiver_type' => recipient.class.base_class.to_s)
+    joins(:receipts).where("#{Receipt.table_name}.receiver_id" => recipient.id,"#{Receipt.table_name}.receiver_type" => recipient.class.base_class.to_s)
   }
   scope :with_object, lambda { |obj|
     where('notified_object_id' => obj.id,'notified_object_type' => obj.class.to_s)
   }
   scope :not_trashed, lambda {
-    joins(:receipts).where('receipts.trashed' => false)
+    joins(:receipts).where("#{Receipt.table_name}.trashed" => false)
   }
   scope :unread,  lambda {
-    joins(:receipts).where('receipts.is_read' => false)
+    joins(:receipts).where("#{Receipt.table_name}.is_read" => false)
   }
   scope :global, lambda { where(:global => true) }
-  scope :expired, lambda { where("notifications.expires < ?", Time.now) }
+  scope :expired, lambda { where("#{Notification.table_name}.expires < ?", Time.now) }
   scope :unexpired, lambda {
-    where("notifications.expires is NULL OR notifications.expires > ?", Time.now)
+    where("#{Notification.table_name}.expires is NULL OR #{Notification.table_name}.expires > ?", Time.now)
   }
 
   include Concerns::ConfigurableMailer
